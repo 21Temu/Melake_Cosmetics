@@ -27,7 +27,7 @@ export default function Messages() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = user?.is_staff === true;
-  const ADMIN_USER_ID = 1;
+  const ADMIN_USER_ID = 1; // Change to user ID 1
 
   useEffect(() => {
     fetchConversations();
@@ -84,7 +84,9 @@ export default function Messages() {
         receiverId = currentConversation;
         console.log('📨 Replying to existing conversation, receiverId:', receiverId);
       } else {
-        console.log('✨ New conversation - sending WITHOUT receiver (will go to all admins)');
+        // New conversation - send to user ID 1
+        receiverId = ADMIN_USER_ID;
+        console.log('✨ New conversation - sending to user ID 1');
       }
       
       console.log('🚀 Calling sendMessage with:', { receiverId, message: messageText.trim() });
