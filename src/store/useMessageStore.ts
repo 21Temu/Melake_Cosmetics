@@ -9,13 +9,12 @@ interface MessageState {
   currentConversation: number | null;
   fetchMessages: (userId: number) => Promise<void>;
   fetchConversations: () => Promise<void>;
-  sendMessage: (receiverId: number, message: string) => Promise<void>;
+  sendMessage: (receiverId: number | undefined, message: string) => Promise<void>;
   markAsRead: (messageId: number) => Promise<void>;
   setCurrentConversation: (userId: number | null) => void;
 }
 
 // Get the admin user ID - you can set this in your backend or .env
-// For now, let's assume admin user ID is 1 (you can change this)
 const ADMIN_USER_ID = 1;
 
 export const useMessageStore = create<MessageState>((set, get) => ({
@@ -30,22 +29,17 @@ export const useMessageStore = create<MessageState>((set, get) => ({
       const response = await apiClient.get('messages/');
       const allMessages = response.data?.results || response.data || [];
       
-      // Get current user from localStorage
       const currentUserStr = localStorage.getItem('user');
       const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
       const isAdmin = currentUser?.is_staff === true;
       
-      // Group messages by conversation
       const conversationMap = new Map<number, Conversation>();
       
       allMessages.forEach((msg: Message) => {
-        // Determine the other participant
         const otherUserId = msg.sender === currentUser?.id ? msg.receiver : msg.sender;
         
-        // For admin: show all conversations with different users
-        // For customers: only show conversation with admin
         if (!isAdmin && otherUserId !== ADMIN_USER_ID) {
-          return; // Skip non-admin conversations for customers
+          return;
         }
         
         if (!conversationMap.has(otherUserId)) {
@@ -89,7 +83,6 @@ export const useMessageStore = create<MessageState>((set, get) => ({
       const currentUserStr = localStorage.getItem('user');
       const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
       
-      // Filter messages between current user and selected user
       const filteredMessages = allMessages.filter(
         (msg: Message) =>
           (msg.sender === currentUser?.id && msg.receiver === userId) ||
@@ -105,12 +98,19 @@ export const useMessageStore = create<MessageState>((set, get) => ({
     }
   },
 
-  sendMessage: async (receiverId: number, message: string) => {
+  // ========== FIXED: Allow sending without receiver ==========
+  sendMessage: async (receiverId: number | undefined, message: string) => {
     try {
-      const response = await apiClient.post('messages/', {
-        receiver: receiverId,
-        message: message,
-      });
+      // Create payload - only add receiver if provided
+      const payload: any = { message };
+      if (receiverId) {
+        payload.receiver = receiverId;
+      }
+      // If no receiverId, send without receiver (goes to all admins)
+      
+      console.log('Sending payload:', payload);
+      
+      const response = await apiClient.post('messages/', payload);
       
       const newMessage = response.data;
       set((state) => ({
@@ -119,11 +119,17 @@ export const useMessageStore = create<MessageState>((set, get) => ({
       
       // Refresh conversations
       await get().fetchConversations();
+      
+      // Refresh messages if we have a current conversation
+      if (receiverId) {
+        await get().fetchMessages(receiverId);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
     }
   },
+  // ========== END FIX ==========
 
   markAsRead: async (messageId: number) => {
     try {
