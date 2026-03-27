@@ -8,21 +8,16 @@ import { apiClient } from '../api/client';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          apiClient.get('products/'),
-          apiClient.get('categories/')
-        ]);
+        const productsRes = await apiClient.get('products/');
         
         // Get featured products (first 4)
         const products = productsRes.data?.results || productsRes.data || [];
         setFeaturedProducts(products.slice(0, 4));
-        setCategories(categoriesRes.data?.results || categoriesRes.data || []);
       } catch (error) {
         console.error('Error fetching home data:', error);
         // Mock data for preview if backend is unavailable
@@ -76,11 +71,6 @@ export default function Home() {
             created_at: new Date().toISOString() 
           },
         ]);
-        setCategories([
-          { id: 1, name: 'Skincare', slug: 'skincare', image: 'https://picsum.photos/seed/skincare/400/400' },
-          { id: 2, name: 'Makeup', slug: 'makeup', image: 'https://picsum.photos/seed/makeup/400/400' },
-          { id: 3, name: 'Fragrance', slug: 'fragrance', image: 'https://picsum.photos/seed/fragrance/400/400' },
-        ]);
       } finally {
         setIsLoading(false);
       }
@@ -128,12 +118,6 @@ export default function Home() {
                 Shop Collection
                 <ArrowRight className="ml-2" size={20} />
               </Link>
-              {/* <Link 
-                to="/about" 
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-foreground bg-background border border-border rounded-full hover:bg-muted transition-all"
-              >
-                Our Story
-              </Link> */}
             </div>
           </motion.div>
         </div>
@@ -149,7 +133,6 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Premium Quality</h3>
-                {/* <p className="text-sm text-muted-foreground">Ethically sourced ingredients</p> */}
               </div>
             </div>
             <div className="flex items-center justify-center space-x-4 p-6 rounded-2xl bg-muted/50">
@@ -158,7 +141,6 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Cruelty Free</h3>
-                {/* <p className="text-sm text-muted-foreground">Never tested on animals</p> */}
               </div>
             </div>
             <div className="flex items-center justify-center space-x-4 p-6 rounded-2xl bg-muted/50">
@@ -167,7 +149,6 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Fast Shipping</h3>
-                {/* <p className="text-sm text-muted-foreground">Free delivery over $100</p> */}
               </div>
             </div>
           </div>
@@ -209,35 +190,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Showcase */}
+      {/* Shop by Category Button */}
       <section className="py-24 bg-muted">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-2xl mx-auto">
             <h2 className="font-serif text-4xl font-bold text-foreground mb-4">Shop by Category</h2>
-            <p className="text-muted-foreground">Explore our curated collections designed for your specific beauty needs.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {categories.map((category) => (
-              <Link 
-                key={category.id} 
-                to={`/products?category=${category.slug}`} 
-                className="group relative overflow-hidden rounded-3xl aspect-square"
-              >
-                <img 
-                  src={category.image || `https://picsum.photos/seed/${category.slug}/600/600`} 
-                  alt={category.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
-                  <h3 className="font-serif text-3xl font-bold text-white mb-2">{category.name}</h3>
-                  <span className="inline-flex items-center text-white/80 font-medium group-hover:text-white transition-colors">
-                    Explore Collection <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
-            ))}
+            <p className="text-muted-foreground mb-8">
+              Explore our curated collections designed for your specific beauty needs.
+            </p>
+            <Link 
+              to="/products" 
+              className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 hover:-translate-y-1"
+            >
+              Browse All Categories
+              <ArrowRight className="ml-2" size={20} />
+            </Link>
           </div>
         </div>
       </section>
