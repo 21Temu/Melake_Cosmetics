@@ -56,44 +56,55 @@ export default function Messages() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!messageText.trim() || isSending) return;
+    console.log('🔵 SEND BUTTON CLICKED', { 
+      messageText: messageText.trim(), 
+      currentConversation, 
+      showNewMessage,
+      isAdmin,
+      isSending 
+    });
+    
+    if (!messageText.trim()) {
+      console.log('❌ Message is empty');
+      return;
+    }
+    
+    if (isSending) {
+      console.log('❌ Already sending');
+      return;
+    }
     
     setIsSending(true);
     
     try {
-      let payload: any = { message: messageText.trim() };
+      let receiverId: number | undefined = undefined;
       
-      // IMPORTANT: Only add receiver if:
-      // 1. Admin is replying to a specific customer (currentConversation exists)
-      // 2. Or if it's a reply to an existing conversation
+      // If there's an existing conversation (currentConversation exists)
       if (currentConversation) {
-        // Admin replying to customer OR customer replying to admin
-        payload.receiver = currentConversation;
+        receiverId = currentConversation;
+        console.log('📨 Replying to existing conversation, receiverId:', receiverId);
+      } else {
+        console.log('✨ New conversation - sending WITHOUT receiver (will go to all admins)');
       }
-      // If no currentConversation (new message), send WITHOUT receiver
-      // This will go to all admins if sent by customer
       
-      console.log('Sending payload:', payload);
+      console.log('🚀 Calling sendMessage with:', { receiverId, message: messageText.trim() });
       
-      await sendMessage(payload.receiver, payload.message);
+      await sendMessage(receiverId, messageText.trim());
+      console.log('✅ Message sent successfully');
+      
       setMessageText('');
       
-      // If this was a new conversation (no currentConversation), refresh and select admin
-      if (!currentConversation && !isAdmin) {
+      // If this was a new conversation, refresh conversations
+      if (!currentConversation) {
+        console.log('🔄 Refreshing conversations after new message');
         await fetchConversations();
-        // Find the admin conversation
-        const adminConversation = conversations.find(c => c.user_id === ADMIN_USER_ID);
-        if (adminConversation) {
-          setCurrentConversation(ADMIN_USER_ID);
-          await fetchMessages(ADMIN_USER_ID);
-        }
         setShowNewMessage(false);
       }
       
       scrollToBottom();
       setTimeout(() => inputRef.current?.focus(), 100);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
     } finally {
       setIsSending(false);
     }
