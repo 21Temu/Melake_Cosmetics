@@ -27,7 +27,7 @@ export default function Messages() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = user?.is_staff === true;
-  const ADMIN_USER_ID = 1; // Set your admin user ID here
+  const ADMIN_USER_ID = 1;
 
   useEffect(() => {
     fetchConversations();
@@ -41,7 +41,6 @@ export default function Messages() {
   }, [currentConversation, fetchMessages]);
 
   useEffect(() => {
-    // Mark messages as read when conversation is opened
     const unreadMessages = messages.filter(
       msg => !msg.is_read && msg.receiver === user?.id
     );
@@ -57,42 +56,37 @@ export default function Messages() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Send button clicked', { messageText, currentConversation, showNewMessage, isAdmin });
-    
-    if (!messageText.trim()) {
-      console.log('Message is empty');
-      return;
-    }
-    
-    if (isSending) {
-      console.log('Already sending');
-      return;
-    }
-    
-    // Determine receiver ID
-    let receiverId = null;
-    
-    if (currentConversation) {
-      receiverId = currentConversation;
-    } else if (showNewMessage || !isAdmin) {
-      receiverId = ADMIN_USER_ID;
-    } else {
-      console.log('No receiver determined');
-      return;
-    }
-    
-    console.log('Sending to receiver:', receiverId);
+    if (!messageText.trim() || isSending) return;
     
     setIsSending(true);
+    
     try {
-      await sendMessage(receiverId, messageText.trim());
+      let payload: any = { message: messageText.trim() };
+      
+      // IMPORTANT: Only add receiver if:
+      // 1. Admin is replying to a specific customer (currentConversation exists)
+      // 2. Or if it's a reply to an existing conversation
+      if (currentConversation) {
+        // Admin replying to customer OR customer replying to admin
+        payload.receiver = currentConversation;
+      }
+      // If no currentConversation (new message), send WITHOUT receiver
+      // This will go to all admins if sent by customer
+      
+      console.log('Sending payload:', payload);
+      
+      await sendMessage(payload.receiver, payload.message);
       setMessageText('');
       
-      // If this was a new conversation, refresh and select it
-      if (!currentConversation) {
+      // If this was a new conversation (no currentConversation), refresh and select admin
+      if (!currentConversation && !isAdmin) {
         await fetchConversations();
-        setCurrentConversation(ADMIN_USER_ID);
-        await fetchMessages(ADMIN_USER_ID);
+        // Find the admin conversation
+        const adminConversation = conversations.find(c => c.user_id === ADMIN_USER_ID);
+        if (adminConversation) {
+          setCurrentConversation(ADMIN_USER_ID);
+          await fetchMessages(ADMIN_USER_ID);
+        }
         setShowNewMessage(false);
       }
       
@@ -116,13 +110,12 @@ export default function Messages() {
     setShowNewMessage(true);
     setCurrentConversation(null);
     setMessageText('');
-    // Focus on input after render
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   const filteredConversations = conversations.filter(conv =>
-    conv.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    conv.username.toLowerCase().includes(searchTerm.toLowerCase())
+    conv.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    conv.username?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const formatMessageTime = (dateString: string) => {
@@ -143,7 +136,6 @@ export default function Messages() {
     return 'Melake Mihiret Support';
   };
 
-  // Check if send button should be enabled
   const isSendEnabled = messageText.trim().length > 0 && !isSending;
 
   return (
@@ -151,7 +143,6 @@ export default function Messages() {
       <div className="bg-card rounded-3xl border border-border/50 shadow-2xl overflow-hidden h-full flex">
         {/* Conversations Sidebar */}
         <div className="w-full md:w-80 lg:w-96 border-r border-border/50 flex flex-col bg-gradient-to-b from-background to-muted/10">
-          {/* Header */}
           <div className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
             <div className="flex items-center justify-between">
               <div>
@@ -175,7 +166,6 @@ export default function Messages() {
             </div>
           </div>
 
-          {/* Search */}
           {conversations.length > 0 && (
             <div className="p-4 border-b border-border/50">
               <div className="relative">
@@ -191,7 +181,6 @@ export default function Messages() {
             </div>
           )}
 
-          {/* Conversations List */}
           <div className="flex-1 overflow-y-auto scrollbar-thin">
             {isLoading ? (
               <div className="flex justify-center items-center h-32">
@@ -273,7 +262,6 @@ export default function Messages() {
         <div className="flex-1 flex flex-col bg-gradient-to-b from-background to-muted/5">
           {currentConversation || showNewMessage ? (
             <>
-              {/* Chat Header */}
               <div className="p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
@@ -300,7 +288,6 @@ export default function Messages() {
                 </div>
               </div>
 
-              {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {messages.length === 0 && !showNewMessage ? (
                   <div className="text-center py-12">
@@ -348,7 +335,6 @@ export default function Messages() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Message Input */}
               <div className="p-6 border-t border-border/50 bg-card/50 backdrop-blur-sm">
                 <form onSubmit={handleSendMessage} className="flex gap-3">
                   <input
