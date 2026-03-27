@@ -5,11 +5,12 @@ export default function Footer() {
   return (
     <footer className="bg-muted mt-auto border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Brand Section */}
           <div className="space-y-4">
             <h3 className="font-serif text-2xl font-bold text-primary">Melake Mihiret</h3>
             <p className="text-sm text-muted-foreground">
-              Discover your true beauty with my amazing cosmetics collection. Crafted with care, designed for elegance.
+              Premium cosmetics crafted with care for the modern individual.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -24,26 +25,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-4 text-foreground">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Home</Link></li>
-              <li><Link to="/products" className="text-sm text-muted-foreground hover:text-primary transition-colors">Shop All</Link></li>
-              <li><Link to="products" className="text-sm text-muted-foreground hover:text-primary transition-colors">Categories</Link></li>
-              <li><Link to="/#" className="text-sm text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-4 text-foreground">Customer Care</h4>
-            <ul className="space-y-2">
-              <li><Link to="/messages" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact Us</Link></li>
-              <li><Link to="/#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Shipping & Returns</Link></li>
-              <li><Link to="/#" className="text-sm text-muted-foreground hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
-            </ul>
-          </div>
-
+          {/* Contact Info */}
           <div>
             <h4 className="font-serif text-lg font-semibold mb-4 text-foreground">Contact Info</h4>
             <ul className="space-y-4">
@@ -57,9 +39,24 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={20} className="text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">mihiretmelake990gmail.com</span>
+                <span className="text-sm text-muted-foreground">mihiretmelake990@gmail.com</span>
               </li>
             </ul>
+          </div>
+
+          {/* Quick Contact */}
+          <div>
+            <h4 className="font-serif text-lg font-semibold mb-4 text-foreground">Get in Touch</h4>
+            <p className="text-sm text-muted-foreground mb-4">
+              Have questions? Reach out to us anytime.
+            </p>
+            <Link 
+              to="/messages" 
+              className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              <Mail size={16} />
+              Send us a message
+            </Link>
           </div>
         </div>
         
