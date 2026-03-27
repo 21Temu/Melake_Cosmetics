@@ -19,16 +19,22 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true,
       
       login: (user: User, token: string) => {
-        // Store only one token format
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
         set({ user, isAuthenticated: true, isLoading: false });
       },
       
       logout: () => {
+        // Clear auth data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        
+        // Clear cart data
+        const { useCartStore } = require('../store/useCartStore');
+        if (useCartStore && useCartStore.getState) {
+          useCartStore.getState().resetCart();
+        }
+        
         set({ user: null, isAuthenticated: false });
       },
       

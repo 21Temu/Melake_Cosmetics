@@ -157,7 +157,7 @@ export default function Products() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-12 gap-6">
         <div>
-          <h1 className="font-serif text-4xl font-bold text-foreground mb-2">Our Collection</h1>
+          <h1 className="font-serif text-4xl font-bold text-foreground mb-2">My Collection</h1>
           <p className="text-muted-foreground">Discover the perfect products for your beauty routine.</p>
         </div>
         

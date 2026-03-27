@@ -15,6 +15,7 @@ export default function Checkout() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<'OFFLINE' | 'ONLINE'>('OFFLINE');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     fullName: user?.full_name || user?.username || '',
@@ -22,7 +23,62 @@ export default function Checkout() {
     shippingAddress: '',
     bankId: '',
   });
+
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
+
+  // Fetch user profile to get saved address
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token && user?.id) {
+          // Fetch the UserProfile directly using the correct endpoint
+          // First try to get user profile by user ID
+          const response = await apiClient.get(`user-profiles/?user=${user.id}`);
+          console.log('User profile response:', response.data);
+          
+          let profileData = null;
+          if (response.data.results) {
+            profileData = response.data.results[0];
+          } else if (Array.isArray(response.data)) {
+            profileData = response.data[0];
+          } else if (response.data) {
+            profileData = response.data;
+          }
+          
+          if (profileData) {
+            setUserProfile(profileData);
+            // Auto-fill address if exists
+            if (profileData.address) {
+              setFormData(prev => ({
+                ...prev,
+                shippingAddress: profileData.address
+              }));
+            }
+            // Auto-fill name and phone
+            if (profileData.full_name) {
+              setFormData(prev => ({
+                ...prev,
+                fullName: profileData.full_name
+              }));
+            }
+            if (profileData.phone_number) {
+              setFormData(prev => ({
+                ...prev,
+                phone: profileData.phone_number
+              }));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    
+    if (user?.id) {
+      fetchUserProfile();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -120,7 +176,6 @@ export default function Checkout() {
         paymentFormData.append('quantity', item.quantity.toString());
         paymentFormData.append('address', formData.shippingAddress);
         paymentFormData.append('phone_number', formData.phone);
-        paymentFormData.append('status', 'pending');
         
         if (paymentProof) {
           paymentFormData.append('payment_image', paymentProof);
@@ -146,8 +201,7 @@ export default function Checkout() {
         orderFormData.append('quantity', item.quantity.toString());
         orderFormData.append('address', formData.shippingAddress);
         orderFormData.append('phone_number', formData.phone);
-        orderFormData.append('status', 'pending');
-        orderFormData.append('payment', payment.payment_id.toString()); // Link to payment
+        orderFormData.append('payment', payment.payment_id.toString());
         
         if (paymentProof) {
           orderFormData.append('payment_image', paymentProof);
@@ -281,6 +335,11 @@ export default function Checkout() {
                         className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                         placeholder="Enter your full delivery address..."
                       />
+                      {userProfile?.address && (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          ✓ Using saved address: {userProfile.address.substring(0, 100)}
+                        </p>
+                      )}
                     </div>
                   </div>
 

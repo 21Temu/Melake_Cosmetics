@@ -9,7 +9,7 @@ import { MessageSquare } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { items, fetchCart } = useCartStore();
+  const { items, fetchCart, resetCart } = useCartStore();
   const { isDark, toggleTheme } = useThemeStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -24,6 +24,15 @@ export default function Navbar() {
   const cartItemCount = items?.reduce((total, item) => total + (item?.quantity || 0), 0) || 0;
   
   console.log('Navbar rendered, cart items count:', cartItemCount, 'items:', items?.length);
+
+  const handleLogout = async () => {
+    // Reset cart first
+    resetCart();
+    // Then logout
+    logout();
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -70,7 +79,7 @@ export default function Navbar() {
                   {user?.is_staff && (
                     <Link to="/admin" className="block px-4 py-2 text-sm text-primary hover:bg-muted">Admin Dashboard</Link>
                   )}
-                  <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted">Logout</button>
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted">Logout</button>
                 </div>
               </div>
             ) : (
@@ -113,9 +122,7 @@ export default function Navbar() {
             <div className="px-4 pt-2 pb-4 space-y-1">
               <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
               <Link to="/products" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
-              <Link to="/messages" className="block p-2 rounded-md text-foreground hover:text-primary hover:bg-muted">
-              <MessageSquare size={20} />
-               </Link>
+              <Link to="/messages" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Messages</Link>
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Profile</Link>
@@ -123,7 +130,7 @@ export default function Navbar() {
                   {user?.is_staff && (
                     <Link to="/admin" className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Admin Dashboard</Link>
                   )}
-                  <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-destructive hover:bg-muted">Logout</button>
+                  <button onClick={handleLogout} className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-destructive hover:bg-muted">Logout</button>
                 </>
               ) : (
                 <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>

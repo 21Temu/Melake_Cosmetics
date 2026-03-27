@@ -9,15 +9,47 @@ export default function Register() {
     username: '',
     email: '',
     password: '',
+    confirm_password: '', // ADD CONFIRM PASSWORD FIELD
     full_name: '',
-    phone_number: '',
+    phone_number: '+251', // Ethiopian code pre-filled
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Special handling for phone number to ensure +251 stays at beginning
+    if (name === 'phone_number') {
+      let phoneValue = value;
+      // If user deletes everything, restore +251
+      if (!phoneValue || phoneValue === '') {
+        phoneValue = '+251';
+      }
+      // If user types, ensure +251 is always at start
+      else if (!phoneValue.startsWith('+251')) {
+        // If user starts typing numbers without +251, add it
+        if (phoneValue.match(/^[0-9]+$/)) {
+          phoneValue = '+251' + phoneValue;
+        }
+        // If user types something else, keep +251
+        else if (!phoneValue.includes('+251')) {
+          phoneValue = '+251';
+        }
+      }
+      setFormData(prev => ({ ...prev, [name]: phoneValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle phone number focus to ensure cursor goes to end
+  const handlePhoneFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const input = e.target;
+    // Move cursor to end of input
+    setTimeout(() => {
+      input.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,6 +57,28 @@ export default function Register() {
     setIsLoading(true);
 
     try {
+      // Validate password match
+      if (formData.password !== formData.confirm_password) {
+        toast.error('Passwords do not match');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate password length
+      if (formData.password.length < 8) {
+        toast.error('Password must be at least 8 characters');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate phone number format
+      const phoneRegex = /^\+251[0-9]{9}$/;
+      if (!phoneRegex.test(formData.phone_number)) {
+        toast.error('Phone number must be in format: +251XXXXXXXXX (9 digits after +251)');
+        setIsLoading(false);
+        return;
+      }
+
       const registerData = {
         username: formData.username.trim(),
         email: formData.email.trim(),
@@ -98,7 +152,7 @@ export default function Register() {
                 type="text"
                 required
                 className="appearance-none rounded-xl relative block w-full px-3 py-4 pl-10 border border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary focus:z-10 sm:text-sm transition-all bg-background"
-                placeholder="Username (unique)"
+                placeholder="Username"
                 value={formData.username}
                 onChange={handleInputChange}
               />
@@ -141,7 +195,7 @@ export default function Register() {
               />
             </div>
             
-            {/* Phone Number Field */}
+            {/* Phone Number Field with Ethiopian Code */}
             <div className="relative">
               <label htmlFor="phone_number" className="sr-only">Phone Number</label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -152,12 +206,16 @@ export default function Register() {
                 name="phone_number"
                 type="tel"
                 required
+                onFocus={handlePhoneFocus}
                 className="appearance-none rounded-xl relative block w-full px-3 py-4 pl-10 border border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary focus:z-10 sm:text-sm transition-all bg-background"
-                placeholder="Phone Number"
+                placeholder="+251 912 345 678"
                 value={formData.phone_number}
                 onChange={handleInputChange}
               />
             </div>
+            <p className="text-xs text-muted-foreground -mt-2 ml-2">
+                   e.g., +251912345678
+            </p>
             
             {/* Password Field */}
             <div className="relative">
@@ -172,8 +230,27 @@ export default function Register() {
                 autoComplete="new-password"
                 required
                 className="appearance-none rounded-xl relative block w-full px-3 py-4 pl-10 border border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary focus:z-10 sm:text-sm transition-all bg-background"
-                placeholder="Password (min 8 characters)"
+                placeholder="Password "
                 value={formData.password}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Confirm Password Field - ADD THIS */}
+            <div className="relative">
+              <label htmlFor="confirm_password" className="sr-only">Confirm Password</label>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <input
+                id="confirm_password"
+                name="confirm_password"
+                type="password"
+                autoComplete="new-password"
+                required
+                className="appearance-none rounded-xl relative block w-full px-3 py-4 pl-10 border border-border placeholder-muted-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary focus:z-10 sm:text-sm transition-all bg-background"
+                placeholder="Confirm Password"
+                value={formData.confirm_password}
                 onChange={handleInputChange}
               />
             </div>

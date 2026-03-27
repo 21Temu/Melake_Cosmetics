@@ -192,8 +192,7 @@ export default function Settings() {
   const tabs = [
     { id: 'profile', label: 'Profile Information', icon: User },
     { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: Globe }
+    { id: 'notifications', label: 'Notifications( Coming Soon ) ', icon: Bell },
   ];
   
   return (
@@ -472,7 +471,7 @@ export default function Settings() {
                 >
                   <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      Notifications
+                      Notifications <b>( Coming Soon )</b>
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Choose what notifications you want to receive
@@ -495,7 +494,7 @@ export default function Settings() {
                             {item.desc}
                           </p>
                         </div>
-                        <button
+                        {/* <button
                           onClick={() => handleNotificationChange(item.key)}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
                             notifications[item.key as keyof typeof notifications]
@@ -510,63 +509,9 @@ export default function Settings() {
                                 : 'translate-x-1'
                             }`}
                           />
-                        </button>
+                        </button> */}
                       </div>
                     ))}
-                  </div>
-                </motion.div>
-              )}
-              
-              {/* Preferences Tab */}
-              {activeTab === 'preferences' && (
-                <motion.div
-                  key="preferences"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
-                >
-                  <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      Preferences
-                    </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      Customize your experience
-                    </p>
-                  </div>
-                  
-                  <div className="p-6 space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        Theme
-                      </label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <button
-                          onClick={() => handleThemeChange('light')}
-                          className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                            theme === 'light'
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <Sun className="w-5 h-5 text-amber-500" />
-                          <span className="font-medium">Light</span>
-                          {theme === 'light' && <CheckCircle className="w-5 h-5 text-blue-500" />}
-                        </button>
-                        <button
-                          onClick={() => handleThemeChange('dark')}
-                          className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                            theme === 'dark'
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <Moon className="w-5 h-5 text-indigo-500" />
-                          <span className="font-medium">Dark</span>
-                          {theme === 'dark' && <CheckCircle className="w-5 h-5 text-blue-500" />}
-                        </button>
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               )}

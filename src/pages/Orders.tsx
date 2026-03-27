@@ -239,14 +239,14 @@ export default function Orders() {
                     {address || 'Address not provided'}
                   </div>
                   
-                  {status === 'pending' && (
+                  {/* {status === 'pending' && (
                     <button
                       onClick={() => handleCancelOrder(order.id)}
                       className="px-6 py-2 border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full font-medium transition-colors"
                     >
                       Cancel Order
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ interface CartState {
   updateQuantity: (itemId: number, quantity: number) => Promise<{ success: boolean; message?: string }>;
   removeFromCart: (itemId: number) => Promise<{ success: boolean; message?: string }>;
   clearCart: () => Promise<void>;
+  resetCart: () => void;  // ADD THIS NEW METHOD
 }
 
 export const useCartStore = create<CartState>()(
@@ -181,6 +182,13 @@ export const useCartStore = create<CartState>()(
           console.error('Failed to clear cart:', error);
           await get().fetchCart();
         }
+      },
+      
+      // ADD THIS NEW METHOD - Resets cart without API calls (for logout)
+      resetCart: () => {
+        set({ items: [], total: 0 });
+        // Remove cart from localStorage
+        localStorage.removeItem('cart-storage');
       },
     }),
     {

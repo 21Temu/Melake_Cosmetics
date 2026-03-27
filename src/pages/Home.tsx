@@ -118,7 +118,7 @@ export default function Home() {
               <span className="text-primary italic">True Beauty</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-lg leading-relaxed">
-              Premium cosmetics curated for the modern, confident individual.
+              Melake cosmetics curated for the modern, confident individual.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
@@ -128,12 +128,12 @@ export default function Home() {
                 Shop Collection
                 <ArrowRight className="ml-2" size={20} />
               </Link>
-              <Link 
+              {/* <Link 
                 to="/about" 
                 className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-foreground bg-background border border-border rounded-full hover:bg-muted transition-all"
               >
                 Our Story
-              </Link>
+              </Link> */}
             </div>
           </motion.div>
         </div>
@@ -149,7 +149,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Premium Quality</h3>
-                <p className="text-sm text-muted-foreground">Ethically sourced ingredients</p>
+                {/* <p className="text-sm text-muted-foreground">Ethically sourced ingredients</p> */}
               </div>
             </div>
             <div className="flex items-center justify-center space-x-4 p-6 rounded-2xl bg-muted/50">
@@ -158,7 +158,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Cruelty Free</h3>
-                <p className="text-sm text-muted-foreground">Never tested on animals</p>
+                {/* <p className="text-sm text-muted-foreground">Never tested on animals</p> */}
               </div>
             </div>
             <div className="flex items-center justify-center space-x-4 p-6 rounded-2xl bg-muted/50">
@@ -167,7 +167,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-serif font-semibold text-lg">Fast Shipping</h3>
-                <p className="text-sm text-muted-foreground">Free delivery over $100</p>
+                {/* <p className="text-sm text-muted-foreground">Free delivery over $100</p> */}
               </div>
             </div>
           </div>
