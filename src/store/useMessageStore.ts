@@ -15,7 +15,7 @@ interface MessageState {
 }
 
 // Get the admin user ID - you can set this in your backend or .env
-const ADMIN_USER_ID = 2;
+const ADMIN_USER_ID = 1;
 
 export const useMessageStore = create<MessageState>((set, get) => ({
   messages: [],
