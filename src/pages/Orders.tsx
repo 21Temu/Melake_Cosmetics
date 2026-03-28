@@ -234,10 +234,10 @@ export default function Orders() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div className="text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">Shipping Address:</span><br/>
-                    {address || 'Address not provided'}
-                  </div>
+                <div className="text-sm text-muted-foreground">
+  <span className="font-medium text-foreground">Shipping Address:</span><br/>
+  {order.address || order.shipping_address || 'Address not provided'}
+</div>
                   
                   {/* {status === 'pending' && (
                     <button
